@@ -1,0 +1,14 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es2018",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "declaration": true,
+    "sourceMap": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "strict": true
+  }
+}

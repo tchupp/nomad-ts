@@ -1,0 +1,24 @@
+{
+  "name": "nomad",
+  "version": "0.1.0",
+  "scripts": {
+    "lint": "tslint --project tsconfig.json",
+    "clean": "rimraf lib",
+    "build": "tsc",
+    "test": "nyc ava"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "dependencies": {
+    "fp-ts": "^1.19.4"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^1.1.1",
+    "ava": "^3.12.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.0.0",
+    "tslint": "^6.0.0",
+    "typescript": "^4.0.3"
+  },
+  "private": true
+}
