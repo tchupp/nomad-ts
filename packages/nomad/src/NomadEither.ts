@@ -75,6 +75,19 @@ export const rightNomad: <Effect, Left = never, Right = never>(nr: Nomad<Effect,
     N.map(E.right)
 
 /**
+ * Derivable from `MonadThrow`.
+ *
+ * @category constructors
+ * @since 1.0.0
+ */
+export const fromEither: <Effect, Left, Right>(ma: E.Either<Left, Right>) => NomadEither<Effect, Left, Right> =
+    /*#__PURE__*/
+    <Effect, Left, Right>(e: Either<Left, Right>) => E.fold(
+        (l: Left) => left<Effect, Left, Right>(l),
+        (r: Right) => right<Effect, Left, Right>(r),
+    )(e);
+
+/**
  * @category constructors
  * @since 1.0.0
  */
@@ -121,19 +134,6 @@ export const effectLeft: <Effect, Left>(eff: (l: Left) => Effect) => <Right>(f: 
 export const effects: <Effect>(effs: ReadonlyArray<Effect>) => <Left, Right>(f: NomadEither<Effect, Left, Right>) => NomadEither<Effect, Left, Right> =
     effs => f => N.effects(effs)(f);
 
-/**
- * Derivable from `MonadThrow`.
- *
- * @category constructors
- * @since 1.0.0
- */
-export const fromEither: <Effect, Left, Right>(ma: E.Either<Left, Right>) => NomadEither<Effect, Left, Right> =
-    /*#__PURE__*/
-    <Effect, Left, Right>(e: Either<Left, Right>) => E.fold(
-        (l: Left) => left<Effect, Left, Right>(l),
-        (r: Right) => right<Effect, Left, Right>(r),
-    )(e);
-
 // -------------------------------------------------------------------------------------
 // destructors
 // -------------------------------------------------------------------------------------
@@ -164,9 +164,8 @@ export const getOrElseW =
  * @category destructors
  * @since 1.0.0
  */
-export const getOrElse: <Effect, Left, Right>(
-    onLeft: (e: Left) => Nomad<Effect, Right>
-) => (ma: NomadEither<Effect, Left, Right>) => Nomad<Effect, Right> = getOrElseW
+export const getOrElse: <Effect, Left, Right>(onLeft: (e: Left) => Nomad<Effect, Right>) =>
+    (ma: NomadEither<Effect, Left, Right>) => Nomad<Effect, Right> = getOrElseW
 
 // -------------------------------------------------------------------------------------
 // combinators
@@ -176,10 +175,8 @@ export const getOrElse: <Effect, Left, Right>(
  * @category combinators
  * @since 1.0.0
  */
-export const orElse: <Effect, Left, Left2, Right>(onLeft: (e: Left) => NomadEither<Effect, Left2, Right>) =>
-    (ma: NomadEither<Effect, Left, Right>) =>
-        NomadEither<Effect, Left2, Right> =
-    (f) => N.chain(E.fold(f, right))
+export const orElse = <Effect, Left, Left2, Right>(onLeft: (e: Left) => NomadEither<Effect, Left2, Right>): (ma: NomadEither<Effect, Left, Right>) => NomadEither<Effect, Left2, Right> =>
+    N.chain(E.fold(onLeft, right))
 
 /**
  * @category combinators
@@ -248,9 +245,7 @@ export const mapLeft: <Left, Left2>(f: (e: Left) => Left2) => <Effect, Right>(fa
  * @category Apply
  * @since 1.0.0
  */
-export const apW = <Effect, Left, Right>(
-    fa: NomadEither<Effect, Left, Right>
-): (<Left2, Right2>(fab: NomadEither<Effect, Left2, (a: Right) => Right2>) => NomadEither<Effect, Left | Left2, Right2>) =>
+export const apW = <Effect, Left, Right>(fa: NomadEither<Effect, Left, Right>): <Left2, Right2>(fab: NomadEither<Effect, Left2, (a: Right) => Right2>) => NomadEither<Effect, Left | Left2, Right2> =>
     flow(
         N.map((gab) => (ga: E.Either<Left, Right>) => E.apW(ga)(gab)),
         N.apW(fa)
@@ -262,9 +257,9 @@ export const apW = <Effect, Left, Right>(
  * @category Apply
  * @since 1.0.0
  */
-export const ap: <Effect, Left, Right>(
-    fa: NomadEither<Effect, Left, Right>
-) => <B>(fab: NomadEither<Effect, Left, (a: Right) => B>) => NomadEither<Effect, Left, B> = apW
+export const ap: <Effect, Left, Right>(fa: NomadEither<Effect, Left, Right>) =>
+    <Right2>(fab: NomadEither<Effect, Left, (a: Right) => Right2>) =>
+        NomadEither<Effect, Left, Right2> = apW
 
 /**
  * Combine two effectful actions, keeping only the result of the first.

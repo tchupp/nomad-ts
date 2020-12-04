@@ -4,6 +4,7 @@ import {TaskEither} from "fp-ts/lib/TaskEither";
 
 import {nomad, Nomad} from "./Nomad";
 import {fromNomadTE, NomadRTE} from "./NomadRTE";
+import {pipe} from "fp-ts/lib/pipeable";
 
 export const URI = "NomadTE";
 export type URI = typeof URI
@@ -31,33 +32,41 @@ export class NomadTE<Effect, Left, Right> {
     }
 
     concat(effect: Effect | ReadonlyArray<Effect>): NomadTE<Effect, Left, Right> {
-        const newInner = this.inner.map(innerNomad => innerNomad.concat(effect));
-        return new NomadTE(newInner);
+        return pipe(
+            task.map(this.inner, innerNomad => innerNomad.concat(effect)),
+            (newInner) => new NomadTE(newInner),
+        );
     }
 
     concatL(effectL: () => Effect | ReadonlyArray<Effect>): NomadTE<Effect, Left, Right> {
-        const newInner = this.inner.map(innerNomad => innerNomad.concatL(effectL));
-        return new NomadTE(newInner);
+        return pipe(
+            task.map(this.inner, innerNomad => innerNomad.concatL(effectL)),
+            (newInner) => new NomadTE(newInner),
+        );
     }
 
     concatLeft(effectLeft: (l: Left) => Effect | ReadonlyArray<Effect>): NomadTE<Effect, Left, Right> {
-        const newInner = this.inner.map(innerNomad =>
-            innerNomad.concatValue(innerEither =>
-                innerEither.fold(
-                    l => effectLeft(l),
-                    () => []
-                )));
-        return new NomadTE(newInner);
+        return pipe(
+            task.map(this.inner, innerNomad =>
+                innerNomad.concatValue(innerEither =>
+                    innerEither.fold(
+                        l => effectLeft(l),
+                        () => []
+                    ))),
+            (newInner) => new NomadTE(newInner),
+        );
     }
 
     concatRight(effectRight: (a: Right) => Effect | ReadonlyArray<Effect>): NomadTE<Effect, Left, Right> {
-        const newInner = this.inner.map(innerNomad =>
-            innerNomad.concatValue(innerEither =>
-                innerEither.fold(
-                    () => [],
-                    r => effectRight(r)
-                )));
-        return new NomadTE(newInner);
+        return pipe(
+            task.map(this.inner, innerNomad =>
+                innerNomad.concatValue(innerEither =>
+                    innerEither.fold(
+                        () => [],
+                        r => effectRight(r)
+                    ))),
+            (newInner) => new NomadTE(newInner),
+        );
     }
 
     map<Right2>(f: (a: Right) => Right2): NomadTE<Effect, Left, Right2> {

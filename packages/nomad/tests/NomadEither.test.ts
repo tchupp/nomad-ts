@@ -336,11 +336,11 @@ test("NomadEither is a functor: map ignores 'left' Either", t => {
 
     {
         const actual = NE.map((a: string) => a.length)(initial);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
     {
         const actual = NE.nomadEither.map(initial, (a: string) => a.length);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
 });
 
@@ -350,11 +350,11 @@ test("NomadEither is a bifunctor: mapLeft", t => {
 
     {
         const actual = NE.mapLeft((a: string) => a.length)(initial);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
     {
         const actual = NE.nomadEither.mapLeft(initial, (a: string) => a.length);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
 });
 
@@ -364,11 +364,11 @@ test("NomadEither is a functor: mapLeft ignores 'right' Either", t => {
 
     {
         const actual = NE.mapLeft((a: string) => a.length)(initial);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
     {
         const actual = NE.nomadEither.mapLeft(initial, (a: string) => a.length);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
 });
 
@@ -376,7 +376,7 @@ test("NomadEither is applicative: of", t => {
     const actual = NE.nomadEither.of("hold dis, right");
 
     const expected = NE.right("hold dis, right");
-    t.deepEqual(expected, actual);
+    t.deepEqual(actual, expected);
 });
 
 test("NomadEither is applicative: ap", t => {
@@ -453,14 +453,14 @@ test("NomadEither is a monad: chain", t => {
             NE.right(`hello, ${a}!`),
             NE.effect(2),
         ))(initial);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
     {
         const actual = NE.nomadEither.chain(initial, a => pipe(
             NE.right(`hello, ${a}!`),
             NE.effect(2),
         ));
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
     {
         const actual = pipe(
@@ -468,7 +468,7 @@ test("NomadEither is a monad: chain", t => {
             NE.map(a => `hello, ${a}!`),
             NE.effect(2),
         );
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
 });
 
@@ -487,7 +487,7 @@ test("chainFirst - bundles the effects from both", t => {
         NE.right(`hello, ${a}!`),
         NE.effect(2),
     ))(initial);
-    t.deepEqual(expected, actual);
+    t.deepEqual(actual, expected);
 });
 
 test("getEq - return true when values and effects are the same", t => {
@@ -833,6 +833,10 @@ test("NomadValidation.alt - acts like Alt, but will combine if there are two lef
         t.deepEqual(actual, expected);
     }
 });
+
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
 
 test("do notation - bind returns a Nomad with an option with one key/value pair", t => {
     const actual = pipe(

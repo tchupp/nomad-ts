@@ -98,11 +98,11 @@ test("Nomad is a functor: map", t => {
 
     {
         const actual = N.map((a: string) => a.length)(initial);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
     {
         const actual = N.nomad.map(initial, (a: string) => a.length);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
 });
 
@@ -110,7 +110,7 @@ test("Nomad is applicative: of", t => {
     const actual = N.nomad.of("hold dis");
 
     const expected = N.pure("hold dis");
-    t.deepEqual(expected, actual);
+    t.deepEqual(actual, expected);
 });
 
 test("Nomad is applicative: ap", t => {
@@ -149,14 +149,14 @@ test("Nomad is a monad: chain", t => {
             N.pure(`hello, ${a}!`),
             N.effect(2),
         ))(initial);
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
     {
         const actual = N.nomad.chain(initial, a => pipe(
             N.pure(`hello, ${a}!`),
             N.effect(2),
         ));
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
     {
         const actual = pipe(
@@ -164,7 +164,7 @@ test("Nomad is a monad: chain", t => {
             N.map(a => `hello, ${a}!`),
             N.effect(2),
         );
-        t.deepEqual(expected, actual);
+        t.deepEqual(actual, expected);
     }
 });
 
@@ -246,6 +246,10 @@ test("getSemigroup - result is order dependent", t => {
         t.deepEqual(actual, expected);
     }
 });
+
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
 
 test("do notation - bind returns a Nomad with an option with one key/value pair", t => {
     const actual = pipe(

@@ -170,7 +170,7 @@ test("NomadTE is applicative: ap", async t => {
     t.deepEqual(await expected.run(), await nomadTE.ap(fab)(initial).run());
 });
 
-test("NomadTE is a chain: chain", async t => {
+test("NomadTE is a monad: chain", async t => {
     const initial = nomadTE.of<number, {}, string>("world")
         .concat([1]);
     const expected = nomadTE.of<number, {}, string>("hello, world!")

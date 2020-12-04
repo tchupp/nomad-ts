@@ -98,7 +98,7 @@ test("NomadRTE is applicative: ap", async t => {
     );
 });
 
-test("NomadRTE is a chain: chain", async t => {
+test("NomadRTE is a monad: chain", async t => {
     const initial = nomadRTE.of<{}, number, {}, string>("world").concat(1);
     const expected = nomadRTE.of<{}, number, {}, string>("hello, world!").concat([1, 2]);
 
