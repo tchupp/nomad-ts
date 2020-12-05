@@ -8,7 +8,7 @@ import * as IO from "fp-ts/IO";
 import * as IOE from "fp-ts/IOEither";
 import * as N from "../src/Nomad";
 import * as NE from "../src/NomadEither";
-import * as AN from "../src/AsyncNomad";
+import * as AN from "../src/TaskNomadEither";
 
 // -------------------------------------------------------------------------------------
 // constructors
@@ -368,13 +368,13 @@ test("swap", async t => {
 // instances
 // -------------------------------------------------------------------------------------
 
-test("AsyncNomad is a functor: URI", async t => {
+test("TaskNomadEither is a functor: URI", async t => {
     {
         t.deepEqual("Nomad", N.nomad.URI);
     }
 });
 
-test("AsyncNomad is a functor: map", async t => {
+test("TaskNomadEither is a functor: map", async t => {
     const initial = AN.right("hold dis, right");
     const expected = NE.right(15);
 
@@ -383,12 +383,12 @@ test("AsyncNomad is a functor: map", async t => {
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.asyncNomad.map(initial, (a: string) => a.length);
+        const actual = AN.taskNomadEither.map(initial, (a: string) => a.length);
         t.deepEqual(await actual(), expected);
     }
 });
 
-test("AsyncNomad is a functor: map ignores 'left' Either", async t => {
+test("TaskNomadEither is a functor: map ignores 'left' Either", async t => {
     const initial = AN.left("hold dis, left");
     const expected = NE.left("hold dis, left");
 
@@ -397,12 +397,12 @@ test("AsyncNomad is a functor: map ignores 'left' Either", async t => {
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.asyncNomad.map(initial, (a: string) => a.length);
+        const actual = AN.taskNomadEither.map(initial, (a: string) => a.length);
         t.deepEqual(await actual(), expected);
     }
 });
 
-test("AsyncNomad is a bifunctor: bimap - left", async t => {
+test("TaskNomadEither is a bifunctor: bimap - left", async t => {
     const initial = AN.left("hold dis, left");
     const expected = NE.left(14);
 
@@ -414,7 +414,7 @@ test("AsyncNomad is a bifunctor: bimap - left", async t => {
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.asyncNomad.bimap(
+        const actual = AN.taskNomadEither.bimap(
             initial,
             (s: string) => s.length,
             (n: number) => n + 1,
@@ -423,7 +423,7 @@ test("AsyncNomad is a bifunctor: bimap - left", async t => {
     }
 });
 
-test("AsyncNomad is a bifunctor: bimap - right", async t => {
+test("TaskNomadEither is a bifunctor: bimap - right", async t => {
     const initial = AN.right("hold dis, right");
     const expected = NE.right(15);
 
@@ -435,7 +435,7 @@ test("AsyncNomad is a bifunctor: bimap - right", async t => {
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.asyncNomad.bimap(
+        const actual = AN.taskNomadEither.bimap(
             initial,
             (n: number) => n + 1,
             (s: string) => s.length,
@@ -444,7 +444,7 @@ test("AsyncNomad is a bifunctor: bimap - right", async t => {
     }
 });
 
-test("AsyncNomad is a bifunctor: mapLeft", async t => {
+test("TaskNomadEither is a bifunctor: mapLeft", async t => {
     const initial = AN.left("hold dis, left");
     const expected = NE.left(14);
 
@@ -453,12 +453,12 @@ test("AsyncNomad is a bifunctor: mapLeft", async t => {
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.asyncNomad.mapLeft(initial, (a: string) => a.length);
+        const actual = AN.taskNomadEither.mapLeft(initial, (a: string) => a.length);
         t.deepEqual(await actual(), expected);
     }
 });
 
-test("AsyncNomad is a functor: mapLeft ignores 'right' Either", async t => {
+test("TaskNomadEither is a functor: mapLeft ignores 'right' Either", async t => {
     const initial = AN.right("hold dis, right");
     const expected = NE.right("hold dis, right");
 
@@ -467,19 +467,19 @@ test("AsyncNomad is a functor: mapLeft ignores 'right' Either", async t => {
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.asyncNomad.mapLeft(initial, (a: string) => a.length);
+        const actual = AN.taskNomadEither.mapLeft(initial, (a: string) => a.length);
         t.deepEqual(await actual(), expected);
     }
 });
 
-test("AsyncNomad is applicative: of", async t => {
-    const actual = AN.asyncNomad.of("hold dis, right");
+test("TaskNomadEither is applicative: of", async t => {
+    const actual = AN.taskNomadEither.of("hold dis, right");
 
     const expected = NE.right("hold dis, right");
     t.deepEqual(await actual(), expected);
 });
 
-test("AsyncNomad is applicative: ap", async t => {
+test("TaskNomadEither is applicative: ap", async t => {
     const fab = pipe(
         AN.right((n: number) => n * 2),
         AN.effect("that effect"),
@@ -496,7 +496,7 @@ test("AsyncNomad is applicative: ap", async t => {
     );
 
     t.deepEqual(expected, await AN.ap(initial)(fab)());
-    t.deepEqual(expected, await AN.asyncNomad.ap(fab, initial)());
+    t.deepEqual(expected, await AN.taskNomadEither.ap(fab, initial)());
 });
 
 test("apFirst - bundles the effects from both", async t => {
@@ -541,7 +541,7 @@ test("apSecond - bundles the effects from both", async t => {
     t.deepEqual(await actual(), expected);
 });
 
-test("AsyncNomad is a monad: chain", async t => {
+test("TaskNomadEither is a monad: chain", async t => {
     const initial = pipe(
         AN.right("world"),
         AN.effect(1),
@@ -560,7 +560,7 @@ test("AsyncNomad is a monad: chain", async t => {
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.asyncNomad.chain(initial, a => pipe(
+        const actual = AN.taskNomadEither.chain(initial, a => pipe(
             AN.right(`hello, ${a}!`),
             AN.effect(2),
         ));
@@ -576,7 +576,7 @@ test("AsyncNomad is a monad: chain", async t => {
     }
 });
 
-test("AsyncNomad is a monad: chain ignores 'left' Either", async t => {
+test("TaskNomadEither is a monad: chain ignores 'left' Either", async t => {
     const initial = pipe(
         AN.left("left, mon"),
         AN.effect(1),
@@ -595,7 +595,7 @@ test("AsyncNomad is a monad: chain ignores 'left' Either", async t => {
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.asyncNomad.chain(initial, a => pipe(
+        const actual = AN.taskNomadEither.chain(initial, a => pipe(
             AN.right(`hello, ${a}!`),
             AN.effect(2),
         ));
@@ -849,7 +849,7 @@ test("NomadValidation.alt - acts like Alt, but will combine if there are two lef
             AN.effect("two")
         );
         const actual1 = V.alt(initial1, () => initial2);
-        const actual2 = AN.asyncNomad.alt(initial1, () => initial2);
+        const actual2 = AN.taskNomadEither.alt(initial1, () => initial2);
 
         const expected = pipe(
             NE.right("one"),
@@ -868,7 +868,7 @@ test("NomadValidation.alt - acts like Alt, but will combine if there are two lef
             AN.effect("two"),
         );
         const actual1 = V.alt(initial1, () => initial2);
-        const actual2 = AN.asyncNomad.alt(initial1, () => initial2);
+        const actual2 = AN.taskNomadEither.alt(initial1, () => initial2);
 
         const expected = pipe(
             NE.right("one"),
@@ -887,7 +887,7 @@ test("NomadValidation.alt - acts like Alt, but will combine if there are two lef
             AN.effect("two"),
         );
         const actual1 = V.alt(initial1, () => initial2);
-        const actual2 = AN.asyncNomad.alt(initial1, () => initial2);
+        const actual2 = AN.taskNomadEither.alt(initial1, () => initial2);
 
         const expected = pipe(
             NE.right("two"),
