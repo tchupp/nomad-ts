@@ -312,7 +312,7 @@ test("swap", t => {
 
 test("NomadEither is a functor: URI", t => {
     {
-        t.deepEqual("Nomad", N.nomad.URI);
+        t.deepEqual("NomadEither", NE.nomadEither.URI);
     }
 });
 

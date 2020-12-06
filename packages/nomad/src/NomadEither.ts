@@ -485,7 +485,7 @@ export function getApplyMonoid<Effect, Left, Right>(M: Monoid<Right>): Monoid<No
  * @category instances
  * @since 1.0.0
  */
-export function getApplicativeNomadValidation<Left>(SE: Semigroup<Left>): Applicative3C<URI, Left> {
+export function getApplicativeNomadEitherValidation<Left>(SE: Semigroup<Left>): Applicative3C<URI, Left> {
     const AV = E.getApplicativeValidation(SE)
     const app: <Effect, Right>(fga: NomadEither<Effect, Left, Right>) => <Right2>(fgab: NomadEither<Effect, Left, (a: Right) => Right2>) => NomadEither<Effect, Left, Right2> =
         <Effect, Right>(fga: NomadEither<Effect, Left, Right>): <Right2>(fgab: NomadEither<Effect, Left, (a: Right) => Right2>) => NomadEither<Effect, Left, Right2> =>
@@ -536,7 +536,7 @@ export function getAltNomadValidation<Left>(SL: Semigroup<Left>): Alt3C<URI, Lef
 export function getNomadValidation<Left>(
     SE: Semigroup<Left>
 ): Monad3C<URI, Left> & Bifunctor3<URI> & Alt3C<URI, Left> & MonadThrow3C<URI, Left> {
-    const applicativeNomadValidation = getApplicativeNomadValidation(SE)
+    const applicativeNomadValidation = getApplicativeNomadEitherValidation(SE)
     const altNomadValidation = getAltNomadValidation(SE)
     return {
         URI,

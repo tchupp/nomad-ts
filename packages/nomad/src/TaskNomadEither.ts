@@ -14,6 +14,7 @@ import {Applicative3, Applicative3C} from "fp-ts/Applicative";
 import {MonadThrow3, MonadThrow3C} from "fp-ts/MonadThrow";
 import {Semigroup} from "fp-ts/Semigroup";
 import {Monoid} from "fp-ts/Monoid";
+import {bind_, bindTo_} from "./bind";
 import * as E from "fp-ts/Either";
 import * as T from "fp-ts/Task";
 import * as N from "./Nomad";
@@ -27,7 +28,7 @@ import Either = E.Either;
 import Task = T.Task;
 import Nomad = N.Nomad;
 import NomadEither = NE.NomadEither;
-import {bind_, bindTo_} from "./bind";
+import TaskNomad = TN.TaskNomad;
 
 /**
  * @category model
@@ -108,7 +109,7 @@ export const rightNomad: <Effect = never, Left = never, Right = never>(ma: Nomad
  * @category constructors
  * @since 1.0.0
  */
-export const fromIOEither: <Effect, Left, Right>(fa: IOEither<Left, Right>) => TaskNomadEither<Effect, Left, Right> =
+export const fromIOEither: <Effect = never, Left = never, Right = never>(fa: IOEither<Left, Right>) => TaskNomadEither<Effect, Left, Right> =
     flow(
         T.fromIO,
         T.map(N.pure),
@@ -120,7 +121,7 @@ export const fromIOEither: <Effect, Left, Right>(fa: IOEither<Left, Right>) => T
  * @category constructors
  * @since 1.0.0
  */
-export const fromEither: <Effect, Left, Right>(ma: Either<Left, Right>) => TaskNomadEither<Effect, Left, Right> =
+export const fromEither: <Effect = never, Left = never, Right = never>(ma: Either<Left, Right>) => TaskNomadEither<Effect, Left, Right> =
     /*#__PURE__*/
     E.fold(left, (a) => right(a))
 
@@ -128,34 +129,33 @@ export const fromEither: <Effect, Left, Right>(ma: Either<Left, Right>) => TaskN
  * @category constructors
  * @since 1.0.0
  */
-export const effect: <Effect>(eff: Effect) => <Left, Right>(f: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
-    // /*#__PURE__*/
-    // flow(NE.effect, T.map);
-    eff => flow(T.map(NE.effect(eff)))
+export const effect: <Effect>(eff: Effect) => <Left = never, Right = never>(f: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
+    /*#__PURE__*/
+    eff => T.map(NE.effect(eff))
 
 /**
  * @category constructors
  * @since 1.0.0
  */
-export const effectL: <Effect>(eff: Lazy<Effect>) => <Left, Right>(f: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
+export const effectL: <Effect>(eff: Lazy<Effect>) => <Left = never, Right = never>(f: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
     /*#__PURE__*/
-    eff => flow(T.map(NE.effectL(eff)))
+    eff => T.map(NE.effectL(eff))
 
 /**
  * @category constructors
  * @since 1.0.0
  */
-export const effectRight: <Effect, Right>(eff: (r: Right) => Effect) => <Left>(f: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
+export const effectRight: <Effect, Right>(eff: (r: Right) => Effect) => <Left = never>(f: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
     /*#__PURE__*/
-    eff => flow(T.map(NE.effectRight(eff)))
+    eff => T.map(NE.effectRight(eff))
 
 /**
  * @category constructors
  * @since 1.0.0
  */
-export const effectLeft: <Effect, Left>(eff: (l: Left) => Effect) => <Right>(f: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
+export const effectLeft: <Effect, Left>(eff: (l: Left) => Effect) => <Right = never>(f: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
     /*#__PURE__*/
-    eff => flow(T.map(NE.effectLeft(eff)))
+    eff => T.map(NE.effectLeft(eff))
 
 /**
  * @category constructors
@@ -163,7 +163,7 @@ export const effectLeft: <Effect, Left>(eff: (l: Left) => Effect) => <Right>(f: 
  */
 export const effects: <Effect>(effs: ReadonlyArray<Effect>) => <Left, Right>(f: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
     /*#__PURE__*/
-    effs => flow(T.map(NE.effects(effs)))
+    effs => T.map(NE.effects(effs))
 
 // -------------------------------------------------------------------------------------
 // destructors
@@ -174,11 +174,16 @@ export const effects: <Effect>(effs: ReadonlyArray<Effect>) => <Left, Right>(f: 
  * @since 1.0.0
  */
 export const fold: <Effect, Left, Right, Value>(
-    onLeft: (e: Left) => Nomad<Effect, Value>,
-    onRight: (a: Right) => Nomad<Effect, Value>
-) => (ma: TaskNomadEither<Effect, Left, Right>) => Task<Nomad<Effect, Value>> =
-    /*#__PURE__*/
-    flow(NE.fold, T.map)
+    onLeft: (e: Left) => TaskNomad<Effect, Value>,
+    onRight: (a: Right) => TaskNomad<Effect, Value>
+) => (ma: TaskNomadEither<Effect, Left, Right>) => TaskNomad<Effect, Value> =
+    (onLeft, onRight) =>
+        TN.chain(
+            E.fold(
+                l => onLeft(l),
+                r => onRight(r),
+            )
+        )
 
 /**
  * Less strict version of [`getOrElse`](#getOrElse).
@@ -186,16 +191,15 @@ export const fold: <Effect, Left, Right, Value>(
  * @category destructors
  * @since 1.0.0
  */
-export const getOrElseW: <Effect, Left, Right2>(onLeft: (e: Left) => Nomad<Effect, Right2>) => <Right>(ma: TaskNomadEither<Effect, Left, Right>) => Task<Nomad<Effect, Right | Right2>> =
-    onLeft => ma => pipe(ma, T.map(NE.getOrElseW(onLeft)))
+export const getOrElseW = <Effect, Left, Right2>(onLeft: (e: Left) => TaskNomad<Effect, Right2>) =>
+    <Right>(ma: TaskNomadEither<Effect, Left, Right>) => pipe(ma, TN.chain(E.fold(onLeft, r => TN.of<Effect, Right | Right2>(r))))
 
 /**
  * @category destructors
  * @since 1.0.0
  */
-export const getOrElse: <Effect, Left, Right>(onLeft: (e: Left) => Nomad<Effect, Right>) =>
-    (ma: TaskNomadEither<Effect, Left, Right>) =>
-        Task<Nomad<Effect, Right>> = getOrElseW
+export const getOrElse: <Effect, Left, Right>(onLeft: (e: Left) => TaskNomad<Effect, Right>) =>
+    (ma: TaskNomadEither<Effect, Left, Right>) => TaskNomad<Effect, Right> = getOrElseW
 
 // -------------------------------------------------------------------------------------
 // combinators
@@ -288,8 +292,7 @@ export const apW = <Effect, Left, Right>(fa: TaskNomadEither<Effect, Left, Right
  * @since 1.0.0
  */
 export const ap: <Effect, Left, Right>(fa: TaskNomadEither<Effect, Left, Right>) =>
-    <Right2>(fab: TaskNomadEither<Effect, Left, (a: Right) => Right2>) =>
-        TaskNomadEither<Effect, Left, Right2> = apW;
+    <Right2>(fab: TaskNomadEither<Effect, Left, (a: Right) => Right2>) => TaskNomadEither<Effect, Left, Right2> = apW;
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -301,8 +304,7 @@ export const ap: <Effect, Left, Right>(fa: TaskNomadEither<Effect, Left, Right>)
  */
 export const apFirst:
     <Effect, Left, Right2>(fb: TaskNomadEither<Effect, Left, Right2>) =>
-        <Right>(fa: TaskNomadEither<Effect, Left, Right>) =>
-            TaskNomadEither<Effect, Left, Right> =
+        <Right>(fa: TaskNomadEither<Effect, Left, Right>) => TaskNomadEither<Effect, Left, Right> =
     (fb) =>
         flow(
             map((a) => () => a),
@@ -494,8 +496,8 @@ export function getApplyMonoid<Effect, Left, Right>(M: Monoid<Right>): Monoid<Ta
  * @category instances
  * @since 1.0.0
  */
-export function getApplicativeNomadValidation<Left>(SE: Semigroup<Left>): Applicative3C<URI, Left> {
-    const AV = NE.getApplicativeNomadValidation(SE)
+export function getApplicativeTaskNomadEitherValidation<Left>(SE: Semigroup<Left>): Applicative3C<URI, Left> {
+    const AV = NE.getApplicativeNomadEitherValidation(SE)
     const app: <Effect, Right>(fga: TaskNomadEither<Effect, Left, Right>) => <Right2>(fgab: TaskNomadEither<Effect, Left, (a: Right) => Right2>) => TaskNomadEither<Effect, Left, Right2> =
         <Effect, Right>(fga: TaskNomadEither<Effect, Left, Right>): <Right2>(fgab: TaskNomadEither<Effect, Left, (a: Right) => Right2>) => TaskNomadEither<Effect, Left, Right2> =>
             flow(
@@ -515,7 +517,7 @@ export function getApplicativeNomadValidation<Left>(SE: Semigroup<Left>): Applic
  * @category instances
  * @since 1.0.0
  */
-export function getAltAsyncNomadValidation<Left>(SL: Semigroup<Left>): Alt3C<URI, Left> {
+export function getAltTaskNomadEitherValidation<Left>(SL: Semigroup<Left>): Alt3C<URI, Left> {
     return {
         URI,
         _E: undefined as any,
@@ -544,8 +546,8 @@ export function getAltAsyncNomadValidation<Left>(SL: Semigroup<Left>): Alt3C<URI
 export function getNomadValidation<Left>(
     SE: Semigroup<Left>
 ): Monad3C<URI, Left> & Bifunctor3<URI> & Alt3C<URI, Left> & MonadThrow3C<URI, Left> {
-    const applicativeNomadValidation = getApplicativeNomadValidation(SE)
-    const altNomadValidation = getAltAsyncNomadValidation(SE)
+    const applicativeNomadValidation = getApplicativeTaskNomadEitherValidation(SE)
+    const altNomadValidation = getAltTaskNomadEitherValidation(SE)
     return {
         URI,
         _E: undefined as any,

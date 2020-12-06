@@ -8,10 +8,10 @@ import {Applicative2} from "fp-ts/Applicative";
 import {Monad2} from "fp-ts/Monad";
 import {flow, Lazy, pipe} from "fp-ts/function";
 import {Functor2} from "fp-ts/Functor";
+import {Semigroup} from "fp-ts/Semigroup";
 import {bind_, bindTo_} from "./bind";
 import * as T from "fp-ts/Task";
 import * as N from "./Nomad";
-import {Semigroup} from "fp-ts/Semigroup";
 
 // -------------------------------------------------------------------------------------
 // model

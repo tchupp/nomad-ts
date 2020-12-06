@@ -8,14 +8,15 @@ import * as IO from "fp-ts/IO";
 import * as IOE from "fp-ts/IOEither";
 import * as N from "../src/Nomad";
 import * as NE from "../src/NomadEither";
-import * as AN from "../src/TaskNomadEither";
+import * as TN from "../src/TaskNomad";
+import * as TNE from "../src/TaskNomadEither";
 
 // -------------------------------------------------------------------------------------
 // constructors
 // -------------------------------------------------------------------------------------
 
 test("constructors - left", async t => {
-    const actual = AN.left("hold dis, left");
+    const actual = TNE.left("hold dis, left");
 
     const expected = {
         effects: [],
@@ -26,7 +27,7 @@ test("constructors - left", async t => {
 });
 
 test("constructors - right", async t => {
-    const actual = AN.right("hold dis, right");
+    const actual = TNE.right("hold dis, right");
 
     const expected = {
         effects: [],
@@ -39,7 +40,7 @@ test("constructors - right", async t => {
 test("constructors - leftIO", async t => {
     const actual = pipe(
         IO.of("hold dis, left"),
-        AN.leftIO
+        TNE.leftIO
     );
 
     const expected = {
@@ -53,7 +54,7 @@ test("constructors - leftIO", async t => {
 test("constructors - rightIO", async t => {
     const actual = pipe(
         IO.of("hold dis, right"),
-        AN.rightIO
+        TNE.rightIO
     );
 
     const expected = {
@@ -67,7 +68,7 @@ test("constructors - rightIO", async t => {
 test("constructors - leftNomad", async t => {
     const actual = pipe(
         N.pure("hold dis, left"),
-        AN.leftNomad
+        TNE.leftNomad
     );
 
     const expected = {
@@ -81,7 +82,7 @@ test("constructors - leftNomad", async t => {
 test("constructors - rightNomad", async t => {
     const actual = pipe(
         N.pure("hold dis, right"),
-        AN.rightNomad
+        TNE.rightNomad
     );
 
     const expected = {
@@ -95,7 +96,7 @@ test("constructors - rightNomad", async t => {
 test("constructors - fromEither - right", async t => {
     const actual = pipe(
         E.right("hold dis, right"),
-        AN.fromEither,
+        TNE.fromEither,
     );
 
     const expected = {
@@ -109,7 +110,7 @@ test("constructors - fromEither - right", async t => {
 test("constructors - fromEither - left", async t => {
     const actual = pipe(
         E.left("hold dis, left"),
-        AN.fromEither,
+        TNE.fromEither,
     );
 
     const expected = {
@@ -123,7 +124,7 @@ test("constructors - fromEither - left", async t => {
 test("constructors - fromIOEither - right", async t => {
     const actual = pipe(
         IOE.right("hold dis, right"),
-        AN.fromIOEither,
+        TNE.fromIOEither,
     );
 
     const expected = {
@@ -137,7 +138,7 @@ test("constructors - fromIOEither - right", async t => {
 test("constructors - fromIOEither - left", async t => {
     const actual = pipe(
         IOE.left("hold dis, left"),
-        AN.fromIOEither,
+        TNE.fromIOEither,
     );
 
     const expected = {
@@ -150,11 +151,11 @@ test("constructors - fromIOEither - left", async t => {
 
 test("constructors - effect", async t => {
     const actual = pipe(
-        AN.right("hold dis, right"),
-        AN.effect(1),
-        AN.effect(2),
-        AN.effect(3),
-        AN.effect(4),
+        TNE.right("hold dis, right"),
+        TNE.effect(1),
+        TNE.effect(2),
+        TNE.effect(3),
+        TNE.effect(4),
     );
 
     const expected = {
@@ -167,10 +168,10 @@ test("constructors - effect", async t => {
 
 test("constructors - effectRight", async t => {
     const actual = pipe(
-        AN.right("hold dis, right"),
-        AN.effectRight((value) => value.length),
-        AN.effectRight((value) => value.length + 1),
-        AN.effectLeft((_) => 0),
+        TNE.right("hold dis, right"),
+        TNE.effectRight((value) => value.length),
+        TNE.effectRight((value) => value.length + 1),
+        TNE.effectLeft((_) => 0),
     );
 
     const expected = {
@@ -183,10 +184,10 @@ test("constructors - effectRight", async t => {
 
 test("constructors - effectLeft", async t => {
     const actual = pipe(
-        AN.left("hold dis, left"),
-        AN.effectLeft((value) => value.length),
-        AN.effectLeft((value) => value.length + 1),
-        AN.effectRight((_) => 0),
+        TNE.left("hold dis, left"),
+        TNE.effectLeft((value) => value.length),
+        TNE.effectLeft((value) => value.length + 1),
+        TNE.effectRight((_) => 0),
     );
 
     const expected = {
@@ -199,9 +200,9 @@ test("constructors - effectLeft", async t => {
 
 test("constructors - effectL", async t => {
     const actual = pipe(
-        AN.right("hold dis, right"),
-        AN.effectL(() => 1),
-        AN.effectL(() => 2),
+        TNE.right("hold dis, right"),
+        TNE.effectL(() => 1),
+        TNE.effectL(() => 2),
     );
 
     const expected = {
@@ -214,9 +215,9 @@ test("constructors - effectL", async t => {
 
 test("constructors - effects", async t => {
     const actual = pipe(
-        AN.right("hold dis, right"),
-        AN.effects([1, 2]),
-        AN.effects([3, 4]),
+        TNE.right("hold dis, right"),
+        TNE.effects([1, 2]),
+        TNE.effects([3, 4]),
     );
 
     const expected = {
@@ -232,21 +233,21 @@ test("constructors - effects", async t => {
 // -------------------------------------------------------------------------------------
 
 test("fold", async t => {
-    const fold = AN.fold(
+    const fold = TNE.fold(
         (l: string) => pipe(
-            N.pure(l.length),
-            N.effect("was left"),
+            TN.pure(l.length),
+            TN.effect("was left"),
         ),
         (r: string) => pipe(
-            N.pure(r.length),
-            N.effect("was right"),
+            TN.pure(r.length),
+            TN.effect("was right"),
         ),
     );
 
     {
         const initial = pipe(
-            AN.right("hold dis, right"),
-            AN.effect("is right"),
+            TNE.right("hold dis, right"),
+            TNE.effect("is right"),
         );
         const actual = fold(initial);
         const expected = {
@@ -258,8 +259,8 @@ test("fold", async t => {
     }
     {
         const initial = pipe(
-            AN.left("hold dis, left"),
-            AN.effect("is left"),
+            TNE.left("hold dis, left"),
+            TNE.effect("is left"),
         );
         const actual = fold(initial);
         const expected = {
@@ -273,17 +274,17 @@ test("fold", async t => {
 
 test("getOrElse", async t => {
     const elseNomad = pipe(
-        N.pure("else this, right"),
-        N.effect(123),
+        TN.pure("else this, right"),
+        TN.effect(123),
     );
-    const getOrElse = AN.getOrElse(
+    const getOrElse = TNE.getOrElse(
         (l: string) => elseNomad,
     );
 
     {
         const initial = pipe(
-            AN.right("hold dis, right"),
-            AN.effect(456),
+            TNE.right("hold dis, right"),
+            TNE.effect(456),
         );
         const actual = getOrElse(initial);
         const expected = {
@@ -295,8 +296,8 @@ test("getOrElse", async t => {
     }
     {
         const initial = pipe(
-            AN.left("hold dis, left"),
-            AN.effect(789),
+            TNE.left("hold dis, left"),
+            TNE.effect(789),
         );
         const actual = getOrElse(initial);
         const expected = {
@@ -313,15 +314,15 @@ test("getOrElse", async t => {
 // -------------------------------------------------------------------------------------
 
 test("orElse", async t => {
-    const orElse = AN.orElse((l: string) => pipe(
-        AN.right("recovered from left"),
-        AN.effect(`left had ${l.length} characters`)
+    const orElse = TNE.orElse((l: string) => pipe(
+        TNE.right("recovered from left"),
+        TNE.effect(`left had ${l.length} characters`)
     ));
 
     {
         const initial = pipe(
-            AN.left("hold dis, left"),
-            AN.effect("started as left"),
+            TNE.left("hold dis, left"),
+            TNE.effect("started as left"),
         );
 
         const actual = orElse(initial);
@@ -336,8 +337,8 @@ test("orElse", async t => {
     }
     {
         const initial = pipe(
-            AN.right("hold dis, right"),
-            AN.effect("started as right"),
+            TNE.right("hold dis, right"),
+            TNE.effect("started as right"),
         );
 
         const actual = orElse(initial);
@@ -348,19 +349,19 @@ test("orElse", async t => {
 
 test("swap", async t => {
     const initial = pipe(
-        AN.right("this started as right"),
-        AN.effect("was right"),
+        TNE.right("this started as right"),
+        TNE.effect("was right"),
     );
     const expected = pipe(
         NE.left("this started as right"),
         NE.effect("was right"),
     );
 
-    const actual1 = AN.swap(initial);
+    const actual1 = TNE.swap(initial);
     t.deepEqual(await actual1(), expected);
 
     // swap(swap(initial)) == initial
-    const actual2 = AN.swap(actual1);
+    const actual2 = TNE.swap(actual1);
     t.deepEqual(await actual2(), await initial());
 })
 
@@ -370,51 +371,51 @@ test("swap", async t => {
 
 test("TaskNomadEither is a functor: URI", async t => {
     {
-        t.deepEqual("Nomad", N.nomad.URI);
+        t.deepEqual("TaskNomadEither", TNE.taskNomadEither.URI);
     }
 });
 
 test("TaskNomadEither is a functor: map", async t => {
-    const initial = AN.right("hold dis, right");
+    const initial = TNE.right("hold dis, right");
     const expected = NE.right(15);
 
     {
-        const actual = AN.map((a: string) => a.length)(initial);
+        const actual = TNE.map((a: string) => a.length)(initial);
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.taskNomadEither.map(initial, (a: string) => a.length);
+        const actual = TNE.taskNomadEither.map(initial, (a: string) => a.length);
         t.deepEqual(await actual(), expected);
     }
 });
 
 test("TaskNomadEither is a functor: map ignores 'left' Either", async t => {
-    const initial = AN.left("hold dis, left");
+    const initial = TNE.left("hold dis, left");
     const expected = NE.left("hold dis, left");
 
     {
-        const actual = AN.map((a: string) => a.length)(initial);
+        const actual = TNE.map((a: string) => a.length)(initial);
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.taskNomadEither.map(initial, (a: string) => a.length);
+        const actual = TNE.taskNomadEither.map(initial, (a: string) => a.length);
         t.deepEqual(await actual(), expected);
     }
 });
 
 test("TaskNomadEither is a bifunctor: bimap - left", async t => {
-    const initial = AN.left("hold dis, left");
+    const initial = TNE.left("hold dis, left");
     const expected = NE.left(14);
 
     {
-        const actual = AN.bimap(
+        const actual = TNE.bimap(
             (s: string) => s.length,
             (n: number) => n + 1,
         )(initial);
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.taskNomadEither.bimap(
+        const actual = TNE.taskNomadEither.bimap(
             initial,
             (s: string) => s.length,
             (n: number) => n + 1,
@@ -424,18 +425,18 @@ test("TaskNomadEither is a bifunctor: bimap - left", async t => {
 });
 
 test("TaskNomadEither is a bifunctor: bimap - right", async t => {
-    const initial = AN.right("hold dis, right");
+    const initial = TNE.right("hold dis, right");
     const expected = NE.right(15);
 
     {
-        const actual = AN.bimap(
+        const actual = TNE.bimap(
             (n: number) => n + 1,
             (s: string) => s.length,
         )(initial);
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.taskNomadEither.bimap(
+        const actual = TNE.taskNomadEither.bimap(
             initial,
             (n: number) => n + 1,
             (s: string) => s.length,
@@ -445,35 +446,35 @@ test("TaskNomadEither is a bifunctor: bimap - right", async t => {
 });
 
 test("TaskNomadEither is a bifunctor: mapLeft", async t => {
-    const initial = AN.left("hold dis, left");
+    const initial = TNE.left("hold dis, left");
     const expected = NE.left(14);
 
     {
-        const actual = AN.mapLeft((a: string) => a.length)(initial);
+        const actual = TNE.mapLeft((a: string) => a.length)(initial);
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.taskNomadEither.mapLeft(initial, (a: string) => a.length);
+        const actual = TNE.taskNomadEither.mapLeft(initial, (a: string) => a.length);
         t.deepEqual(await actual(), expected);
     }
 });
 
 test("TaskNomadEither is a functor: mapLeft ignores 'right' Either", async t => {
-    const initial = AN.right("hold dis, right");
+    const initial = TNE.right("hold dis, right");
     const expected = NE.right("hold dis, right");
 
     {
-        const actual = AN.mapLeft((a: string) => a.length)(initial);
+        const actual = TNE.mapLeft((a: string) => a.length)(initial);
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.taskNomadEither.mapLeft(initial, (a: string) => a.length);
+        const actual = TNE.taskNomadEither.mapLeft(initial, (a: string) => a.length);
         t.deepEqual(await actual(), expected);
     }
 });
 
 test("TaskNomadEither is applicative: of", async t => {
-    const actual = AN.taskNomadEither.of("hold dis, right");
+    const actual = TNE.taskNomadEither.of("hold dis, right");
 
     const expected = NE.right("hold dis, right");
     t.deepEqual(await actual(), expected);
@@ -481,12 +482,12 @@ test("TaskNomadEither is applicative: of", async t => {
 
 test("TaskNomadEither is applicative: ap", async t => {
     const fab = pipe(
-        AN.right((n: number) => n * 2),
-        AN.effect("that effect"),
+        TNE.right((n: number) => n * 2),
+        TNE.effect("that effect"),
     );
     const initial = pipe(
-        AN.right(1),
-        AN.effect("this effect"),
+        TNE.right(1),
+        TNE.effect("this effect"),
     );
 
     const expected = pipe(
@@ -495,21 +496,21 @@ test("TaskNomadEither is applicative: ap", async t => {
         NE.effect("that effect"),
     );
 
-    t.deepEqual(expected, await AN.ap(initial)(fab)());
-    t.deepEqual(expected, await AN.taskNomadEither.ap(fab, initial)());
+    t.deepEqual(expected, await TNE.ap(initial)(fab)());
+    t.deepEqual(expected, await TNE.taskNomadEither.ap(fab, initial)());
 });
 
 test("apFirst - bundles the effects from both", async t => {
     const first = pipe(
-        AN.right(1),
-        AN.effect("that effect"),
+        TNE.right(1),
+        TNE.effect("that effect"),
     );
     const second = pipe(
-        AN.right(2),
-        AN.effect("this effect"),
+        TNE.right(2),
+        TNE.effect("this effect"),
     );
 
-    const actual = AN.apFirst(second)(first);
+    const actual = TNE.apFirst(second)(first);
 
     const expected = pipe(
         NE.right(1),
@@ -522,15 +523,15 @@ test("apFirst - bundles the effects from both", async t => {
 
 test("apSecond - bundles the effects from both", async t => {
     const first = pipe(
-        AN.right(1),
-        AN.effect("that effect"),
+        TNE.right(1),
+        TNE.effect("that effect"),
     );
     const second = pipe(
-        AN.right(2),
-        AN.effect("this effect"),
+        TNE.right(2),
+        TNE.effect("this effect"),
     );
 
-    const actual = AN.apSecond(second)(first);
+    const actual = TNE.apSecond(second)(first);
 
     const expected = pipe(
         NE.right(2),
@@ -543,8 +544,8 @@ test("apSecond - bundles the effects from both", async t => {
 
 test("TaskNomadEither is a monad: chain", async t => {
     const initial = pipe(
-        AN.right("world"),
-        AN.effect(1),
+        TNE.right("world"),
+        TNE.effect(1),
     );
 
     const expected = {
@@ -553,24 +554,24 @@ test("TaskNomadEither is a monad: chain", async t => {
     };
 
     {
-        const actual = AN.chain(a => pipe(
-            AN.right(`hello, ${a}!`),
-            AN.effect(2),
+        const actual = TNE.chain(a => pipe(
+            TNE.right(`hello, ${a}!`),
+            TNE.effect(2),
         ))(initial);
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.taskNomadEither.chain(initial, a => pipe(
-            AN.right(`hello, ${a}!`),
-            AN.effect(2),
+        const actual = TNE.taskNomadEither.chain(initial, a => pipe(
+            TNE.right(`hello, ${a}!`),
+            TNE.effect(2),
         ));
         t.deepEqual(await actual(), expected);
     }
     {
         const actual = pipe(
             initial,
-            AN.map(a => `hello, ${a}!`),
-            AN.effect(2),
+            TNE.map(a => `hello, ${a}!`),
+            TNE.effect(2),
         );
         t.deepEqual(await actual(), expected);
     }
@@ -578,8 +579,8 @@ test("TaskNomadEither is a monad: chain", async t => {
 
 test("TaskNomadEither is a monad: chain ignores 'left' Either", async t => {
     const initial = pipe(
-        AN.left("left, mon"),
-        AN.effect(1),
+        TNE.left("left, mon"),
+        TNE.effect(1),
     );
 
     const expected = {
@@ -588,16 +589,16 @@ test("TaskNomadEither is a monad: chain ignores 'left' Either", async t => {
     };
 
     {
-        const actual = AN.chain(a => pipe(
-            AN.right<number, string, string>(`hello, ${a}!`),
-            AN.effect(2),
+        const actual = TNE.chain(a => pipe(
+            TNE.right<number, string, string>(`hello, ${a}!`),
+            TNE.effect(2),
         ))(initial);
         t.deepEqual(await actual(), expected);
     }
     {
-        const actual = AN.taskNomadEither.chain(initial, a => pipe(
-            AN.right(`hello, ${a}!`),
-            AN.effect(2),
+        const actual = TNE.taskNomadEither.chain(initial, a => pipe(
+            TNE.right(`hello, ${a}!`),
+            TNE.effect(2),
         ));
         t.deepEqual(await actual(), expected);
     }
@@ -605,8 +606,8 @@ test("TaskNomadEither is a monad: chain ignores 'left' Either", async t => {
 
 test("chainFirst - bundles the effects from both", async t => {
     const initial = pipe(
-        AN.right("world"),
-        AN.effect(1),
+        TNE.right("world"),
+        TNE.effect(1),
     );
 
     const expected = {
@@ -614,43 +615,43 @@ test("chainFirst - bundles the effects from both", async t => {
         value: E.right("world"),
     };
 
-    const actual = AN.chainFirst(a => pipe(
-        AN.right(`hello, ${a}!`),
-        AN.effect(2),
+    const actual = TNE.chainFirst(a => pipe(
+        TNE.right(`hello, ${a}!`),
+        TNE.effect(2),
     ))(initial);
     t.deepEqual(await actual(), expected);
 });
 
 test("getMonoid - returns first non-'left' value. combines if both are 'right' values", async t => {
-    const M = AN.getMonoid(monoidSum);
+    const M = TNE.getMonoid(monoidSum);
 
     {
-        const initial1 = AN.right(952);
-        const initial2 = AN.right(17);
+        const initial1 = TNE.right(952);
+        const initial2 = TNE.right(17);
         const actual = M.concat(initial1, initial2);
 
         const expected = NE.right(969);
         t.deepEqual(await actual(), expected);
     }
     {
-        const initial1 = AN.right(952);
-        const initial2 = AN.left(17);
+        const initial1 = TNE.right(952);
+        const initial2 = TNE.left(17);
         const actual = M.concat(initial1, initial2);
 
         const expected = NE.right(952);
         t.deepEqual(await actual(), expected);
     }
     {
-        const initial1 = AN.left(952);
-        const initial2 = AN.right(17);
+        const initial1 = TNE.left(952);
+        const initial2 = TNE.right(17);
         const actual = M.concat(initial1, initial2);
 
         const expected = NE.right(17);
         t.deepEqual(await actual(), expected);
     }
     {
-        const initial1 = AN.left(952);
-        const initial2 = AN.left(17);
+        const initial1 = TNE.left(952);
+        const initial2 = TNE.left(17);
         const actual = M.concat(initial1, initial2);
 
         const expected = NE.left(952);
@@ -660,15 +661,15 @@ test("getMonoid - returns first non-'left' value. combines if both are 'right' v
 
 test("getMonoid - result is order dependent", async t => {
     const initial1 = pipe(
-        AN.right(952),
-        AN.effect("one"),
+        TNE.right(952),
+        TNE.effect("one"),
     );
     const initial2 = pipe(
-        AN.left(17),
-        AN.effect("two"),
+        TNE.left(17),
+        TNE.effect("two"),
     );
 
-    const M = AN.getMonoid(monoidSum);
+    const M = TNE.getMonoid(monoidSum);
 
     {
         const actual = M.concat(initial1, initial2);
@@ -693,35 +694,35 @@ test("getMonoid - result is order dependent", async t => {
 });
 
 test("getApplyMonoid - returns first 'left' value. combines if both are 'right' values", async t => {
-    const M = AN.getApplyMonoid(monoidSum);
+    const M = TNE.getApplyMonoid(monoidSum);
 
     {
-        const initial1 = AN.right(952);
-        const initial2 = AN.right(17);
+        const initial1 = TNE.right(952);
+        const initial2 = TNE.right(17);
         const actual = M.concat(initial1, initial2);
 
         const expected = NE.right(969);
         t.deepEqual(await actual(), expected);
     }
     {
-        const initial1 = AN.right(952);
-        const initial2 = AN.left(17);
+        const initial1 = TNE.right(952);
+        const initial2 = TNE.left(17);
         const actual = M.concat(initial1, initial2);
 
         const expected = NE.left(17);
         t.deepEqual(await actual(), expected);
     }
     {
-        const initial1 = AN.left(952);
-        const initial2 = AN.right(17);
+        const initial1 = TNE.left(952);
+        const initial2 = TNE.right(17);
         const actual = M.concat(initial1, initial2);
 
         const expected = NE.left(952);
         t.deepEqual(await actual(), expected);
     }
     {
-        const initial1 = AN.left(952);
-        const initial2 = AN.left(17);
+        const initial1 = TNE.left(952);
+        const initial2 = TNE.left(17);
         const actual = M.concat(initial1, initial2);
 
         const expected = NE.left(952);
@@ -731,15 +732,15 @@ test("getApplyMonoid - returns first 'left' value. combines if both are 'right' 
 
 test("getApplyMonoid - result is order dependent", async t => {
     const initial1 = pipe(
-        AN.left(952),
-        AN.effect("one"),
+        TNE.left(952),
+        TNE.effect("one"),
     );
     const initial2 = pipe(
-        AN.right(17),
-        AN.effect("two"),
+        TNE.right(17),
+        TNE.effect("two"),
     );
 
-    const M = AN.getApplyMonoid(monoidSum);
+    const M = TNE.getApplyMonoid(monoidSum);
 
     {
         const actual = M.concat(initial1, initial2);
@@ -764,16 +765,16 @@ test("getApplyMonoid - result is order dependent", async t => {
 });
 
 test("NomadValidation.ap - acts like Apply, but will combine if there are two lefts", async t => {
-    const V = AN.getNomadValidation(semigroupSum);
+    const V = TNE.getNomadValidation(semigroupSum);
 
     {
         const initial1 = pipe(
-            AN.right((a: string) => `hello, ${a}!`),
-            AN.effect("two")
+            TNE.right((a: string) => `hello, ${a}!`),
+            TNE.effect("two")
         );
         const initial2 = pipe(
-            AN.right("world"),
-            AN.effect("one")
+            TNE.right("world"),
+            TNE.effect("one")
         );
         const actual = V.ap(initial1, initial2);
 
@@ -785,12 +786,12 @@ test("NomadValidation.ap - acts like Apply, but will combine if there are two le
     }
     {
         const initial1 = pipe(
-            AN.right((a: string) => `hello, ${a}!`),
-            AN.effect("two")
+            TNE.right((a: string) => `hello, ${a}!`),
+            TNE.effect("two")
         );
         const initial2 = pipe(
-            AN.left(17),
-            AN.effect("one")
+            TNE.left(17),
+            TNE.effect("one")
         );
         const actual = V.ap(initial1, initial2);
 
@@ -802,12 +803,12 @@ test("NomadValidation.ap - acts like Apply, but will combine if there are two le
     }
     {
         const initial1 = pipe(
-            AN.left(952),
-            AN.effect("two")
+            TNE.left(952),
+            TNE.effect("two")
         );
         const initial2 = pipe(
-            AN.right("world"),
-            AN.effect("one")
+            TNE.right("world"),
+            TNE.effect("one")
         );
         const actual = V.ap(initial1, initial2);
 
@@ -819,12 +820,12 @@ test("NomadValidation.ap - acts like Apply, but will combine if there are two le
     }
     {
         const initial1 = pipe(
-            AN.left(952),
-            AN.effect("two")
+            TNE.left(952),
+            TNE.effect("two")
         );
         const initial2 = pipe(
-            AN.left(17),
-            AN.effect("one")
+            TNE.left(17),
+            TNE.effect("one")
         );
         const actual = V.ap(initial1, initial2);
 
@@ -837,38 +838,19 @@ test("NomadValidation.ap - acts like Apply, but will combine if there are two le
 });
 
 test("NomadValidation.alt - acts like Alt, but will combine if there are two lefts", async t => {
-    const V = AN.getNomadValidation(semigroupSum);
+    const V = TNE.getNomadValidation(semigroupSum);
 
     {
         const initial1 = pipe(
-            AN.right("one"),
-            AN.effect("one"),
+            TNE.right("one"),
+            TNE.effect("one"),
         );
         const initial2 = pipe(
-            AN.right("two"),
-            AN.effect("two")
+            TNE.right("two"),
+            TNE.effect("two")
         );
         const actual1 = V.alt(initial1, () => initial2);
-        const actual2 = AN.taskNomadEither.alt(initial1, () => initial2);
-
-        const expected = pipe(
-            NE.right("one"),
-            NE.effect("one"),
-        );
-        t.deepEqual(await actual1(), expected);
-        t.deepEqual(await actual2(), expected);
-    }
-    {
-        const initial1 = pipe(
-            AN.right("one"),
-            AN.effect("one"),
-        );
-        const initial2 = pipe(
-            AN.left(17),
-            AN.effect("two"),
-        );
-        const actual1 = V.alt(initial1, () => initial2);
-        const actual2 = AN.taskNomadEither.alt(initial1, () => initial2);
+        const actual2 = TNE.taskNomadEither.alt(initial1, () => initial2);
 
         const expected = pipe(
             NE.right("one"),
@@ -879,15 +861,34 @@ test("NomadValidation.alt - acts like Alt, but will combine if there are two lef
     }
     {
         const initial1 = pipe(
-            AN.left(952),
-            AN.effect("one"),
+            TNE.right("one"),
+            TNE.effect("one"),
         );
         const initial2 = pipe(
-            AN.right("two"),
-            AN.effect("two"),
+            TNE.left(17),
+            TNE.effect("two"),
         );
         const actual1 = V.alt(initial1, () => initial2);
-        const actual2 = AN.taskNomadEither.alt(initial1, () => initial2);
+        const actual2 = TNE.taskNomadEither.alt(initial1, () => initial2);
+
+        const expected = pipe(
+            NE.right("one"),
+            NE.effect("one"),
+        );
+        t.deepEqual(await actual1(), expected);
+        t.deepEqual(await actual2(), expected);
+    }
+    {
+        const initial1 = pipe(
+            TNE.left(952),
+            TNE.effect("one"),
+        );
+        const initial2 = pipe(
+            TNE.right("two"),
+            TNE.effect("two"),
+        );
+        const actual1 = V.alt(initial1, () => initial2);
+        const actual2 = TNE.taskNomadEither.alt(initial1, () => initial2);
 
         const expected = pipe(
             NE.right("two"),
@@ -899,12 +900,12 @@ test("NomadValidation.alt - acts like Alt, but will combine if there are two lef
     }
     {
         const initial1 = pipe(
-            AN.left(952),
-            AN.effect("one"),
+            TNE.left(952),
+            TNE.effect("one"),
         );
         const initial2 = pipe(
-            AN.left(17),
-            AN.effect("two")
+            TNE.left(17),
+            TNE.effect("two")
         );
         const actual = V.alt(initial1, () => initial2);
 
@@ -923,8 +924,8 @@ test("NomadValidation.alt - acts like Alt, but will combine if there are two lef
 
 test("do notation - bind returns a Nomad with an option with one key/value pair", async t => {
     const actual = pipe(
-        AN.Do,
-        AN.bind("key", ({}) => AN.right("value")),
+        TNE.Do,
+        TNE.bind("key", ({}) => TNE.right("value")),
     );
 
     const expected = {
@@ -939,8 +940,8 @@ test("do notation - bind returns a Nomad with an option with one key/value pair"
 
 test("do notation - bindTo returns a Nomad with an option with one key/value pair", async t => {
     const actual = pipe(
-        AN.right("value"),
-        AN.bindTo("key"),
+        TNE.right("value"),
+        TNE.bindTo("key"),
     );
 
     const expected = {
