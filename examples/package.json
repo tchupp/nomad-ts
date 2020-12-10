@@ -1,0 +1,23 @@
+{
+  "name": "@nomad/examples",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "lint": "tslint --project tsconfig.json",
+    "clean": "rimraf lib",
+    "build": "tsc",
+    "test": "nyc ava"
+  },
+  "dependencies": {
+    "fp-ts": "^2.8.1",
+    "nomad": "^0.1.0"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^1.1.1",
+    "ava": "^3.12.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.0.0",
+    "tslint": "^6.0.0",
+    "typescript": "^4.0.3"
+  }
+}
