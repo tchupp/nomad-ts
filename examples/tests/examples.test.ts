@@ -1,5 +1,5 @@
 import test from "ava";
-import {AN, TNE, NE} from "nomad";
+import {AN, TNE, NE} from "@nomad/core";
 
 import {flow, pipe} from "fp-ts/function";
 import * as E from "fp-ts/Either";
