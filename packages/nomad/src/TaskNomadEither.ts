@@ -17,6 +17,7 @@ import {Monoid} from "fp-ts/Monoid";
 import {bind_, bindTo_} from "./bind";
 import * as E from "fp-ts/Either";
 import * as T from "fp-ts/Task";
+import * as TE from "fp-ts/TaskEither";
 import * as N from "./Nomad";
 import * as NE from "./NomadEither";
 import * as TN from "./TaskNomad";
@@ -27,6 +28,7 @@ import * as TN from "./TaskNomad";
 import Either = E.Either;
 import Task = T.Task;
 import Nomad = N.Nomad;
+import TaskEither = TE.TaskEither;
 import NomadEither = NE.NomadEither;
 import TaskNomad = TN.TaskNomad;
 
@@ -112,6 +114,15 @@ export const rightNomad: <Effect = never, Left = never, Right = never>(ma: Nomad
 export const fromIOEither: <Effect = never, Left = never, Right = never>(fa: IOEither<Left, Right>) => TaskNomadEither<Effect, Left, Right> =
     flow(
         T.fromIO,
+        T.map(N.pure),
+    )
+
+/**
+ * @category constructors
+ * @since 1.0.0
+ */
+export const fromTaskEither: <Effect = never, Left = never, Right = never>(fa: TaskEither<Left, Right>) => TaskNomadEither<Effect, Left, Right> =
+    flow(
         T.map(N.pure),
     )
 

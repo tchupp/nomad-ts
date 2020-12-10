@@ -61,6 +61,14 @@ export const fromTaskNomadEither: <Dep, Effect, Left, Right>(fa: TaskNomadEither
  * @category constructors
  * @since 1.0.0
  */
+export const fromTaskEither: <Dep, Effect, Left, Right>(fa: TaskEither<Left, Right>) => AsyncNomad<Dep, Effect, Left, Right> =
+    /*#__PURE__*/
+    flow(TNE.fromTaskEither, fromTaskNomadEither)
+
+/**
+ * @category constructors
+ * @since 1.0.0
+ */
 export const left: <Dep, Effect = never, Left = never, Right = never>(l: Left) => AsyncNomad<Dep, Effect, Left, Right> =
     /*#__PURE__*/
     flow(TNE.left, fromTaskNomadEither)

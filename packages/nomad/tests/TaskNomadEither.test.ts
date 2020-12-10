@@ -6,6 +6,7 @@ import {semigroupSum} from "fp-ts/Semigroup";
 import * as E from "fp-ts/Either";
 import * as IO from "fp-ts/IO";
 import * as IOE from "fp-ts/IOEither";
+import * as TE from "fp-ts/TaskEither";
 import * as N from "../src/Nomad";
 import * as NE from "../src/NomadEither";
 import * as TN from "../src/TaskNomad";
@@ -111,6 +112,34 @@ test("constructors - fromEither - left", async t => {
     const actual = pipe(
         E.left("hold dis, left"),
         TNE.fromEither,
+    );
+
+    const expected = {
+        effects: [],
+        value: E.left("hold dis, left"),
+    }
+
+    t.deepEqual(await actual(), expected);
+});
+
+test("constructors - fromTaskEither - right", async t => {
+    const actual = pipe(
+        TE.right("hold dis, right"),
+        TNE.fromTaskEither,
+    );
+
+    const expected = {
+        effects: [],
+        value: E.right("hold dis, right"),
+    }
+
+    t.deepEqual(await actual(), expected);
+});
+
+test("constructors - fromTaskEither - left", async t => {
+    const actual = pipe(
+        TE.left("hold dis, left"),
+        TNE.fromTaskEither,
     );
 
     const expected = {

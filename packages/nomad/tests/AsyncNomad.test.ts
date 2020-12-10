@@ -7,6 +7,7 @@ import * as E from "fp-ts/Either";
 import * as R from "fp-ts/Reader";
 import * as IO from "fp-ts/IO";
 import * as IOE from "fp-ts/IOEither";
+import * as TE from "fp-ts/TaskEither";
 import * as N from "../src/Nomad";
 import * as TN from "../src/TaskNomad";
 import * as NE from "../src/NomadEither";
@@ -123,6 +124,36 @@ test("constructors - fromEither - left", async t => {
     const actual = pipe(
         E.left("hold dis, left"),
         AN.fromEither,
+        AN.executePromise({}),
+    );
+
+    const expected = {
+        effects: [],
+        value: E.left("hold dis, left"),
+    }
+
+    t.deepEqual(await actual, expected);
+});
+
+test("constructors - fromTaskEither - right", async t => {
+    const actual = pipe(
+        TE.right("hold dis, right"),
+        AN.fromTaskEither,
+        AN.executePromise({}),
+    );
+
+    const expected = {
+        effects: [],
+        value: E.right("hold dis, right"),
+    }
+
+    t.deepEqual(await actual, expected);
+});
+
+test("constructors - fromTaskEither - left", async t => {
+    const actual = pipe(
+        TE.left("hold dis, left"),
+        AN.fromTaskEither,
         AN.executePromise({}),
     );
 
