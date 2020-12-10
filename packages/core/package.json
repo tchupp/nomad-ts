@@ -1,5 +1,5 @@
 {
-  "name": "nomad",
+  "name": "@nomad/core",
   "version": "0.1.0",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
@@ -19,6 +19,5 @@
     "ts-node": "^9.0.0",
     "tslint": "^6.0.0",
     "typescript": "^4.0.3"
-  },
-  "private": true
+  }
 }

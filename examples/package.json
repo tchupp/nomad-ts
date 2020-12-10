@@ -1,7 +1,6 @@
 {
   "name": "@nomad/examples",
   "private": true,
-  "version": "0.1.0",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "clean": "rimraf lib",
@@ -10,7 +9,7 @@
   },
   "dependencies": {
     "fp-ts": "^2.8.1",
-    "nomad": "^0.1.0"
+    "@nomad/core": "^0.1.0"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
