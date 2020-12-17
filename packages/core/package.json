@@ -1,6 +1,17 @@
 {
-  "name": "@nomad/core",
-  "version": "0.1.0",
+  "name": "@nomad-ts/core",
+  "version": "0.1.2-alpha.2",
+  "description": "Multipurpose composable types that rollup effects",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tchupp/nomad-ts.git"
+  },
+  "author": "Theo Chupp <tclchiam@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tchupp/nomad-ts/issues"
+  },
+  "homepage": "https://github.com/tchupp/nomad-ts",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "clean": "rimraf lib",

@@ -1,5 +1,5 @@
 {
-  "name": "@nomad/examples",
+  "name": "@nomad-ts/examples",
   "private": true,
   "scripts": {
     "lint": "tslint --project tsconfig.json",
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "fp-ts": "^2.8.1",
-    "@nomad/core": "^0.1.0"
+    "@nomad-ts/core": "^0.1.0"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",

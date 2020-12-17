@@ -1,5 +1,5 @@
 {
-  "name": "@nomad/root",
+  "name": "@nomad-ts/root",
   "private": true,
   "workspaces": [
     "packages/*",

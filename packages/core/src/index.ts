@@ -1,14 +1,14 @@
-export * as N from "../src/Nomad";
-export * as TN from "../src/TaskNomad";
-export * as TNE from "../src/TaskNomadEither";
-export * as NE from "../src/NomadEither";
-export * as AN from "../src/AsyncNomad";
+export * as N from "./Nomad";
+export * as TN from "./TaskNomad";
+export * as TNE from "./TaskNomadEither";
+export * as NE from "./NomadEither";
+export * as AN from "./AsyncNomad";
 
-import * as N from "../src/Nomad";
-import * as TN from "../src/TaskNomad";
-import * as TNE from "../src/TaskNomadEither";
-import * as NE from "../src/NomadEither";
-import * as AN from "../src/AsyncNomad";
+import * as N from "./Nomad";
+import * as TN from "./TaskNomad";
+import * as TNE from "./TaskNomadEither";
+import * as NE from "./NomadEither";
+import * as AN from "./AsyncNomad";
 
 export type Nomad<Effect, Value> = N.Nomad<Effect, Value>;
 export type NomadEither<Effect, Left, Right> = NE.NomadEither<Effect, Left, Right>;

@@ -1,3 +1,3 @@
 # Nomad
 
-Multipurpose composable FP types that rollup effect types
+Multipurpose composable types that rollup effects
