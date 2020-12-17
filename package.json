@@ -13,6 +13,8 @@
     "publish": "lerna run publish"
   },
   "devDependencies": {
+    "fp-ts": "^2.8.1",
+    "glob": "^7.1.6",
     "lerna": "^3.20.2"
   }
 }

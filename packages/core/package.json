@@ -15,8 +15,10 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "clean": "rimraf lib",
-    "build": "tsc",
-    "test": "nyc ava"
+    "prebuild": "yarn run clean",
+    "build": "tsc && ts-node ../../scripts/build",
+    "test": "nyc ava",
+    "prepare": "yarn run build"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
