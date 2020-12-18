@@ -1,0 +1,39 @@
+on:
+  push:
+    branches:
+      - release
+
+name: "Publish NPM Package"
+
+jobs:
+  publish-to-github-packages:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: oleksiyrudenko/gha-git-credentials@v2
+        with:
+          name: "Github Actions"
+          email: 'github.actions@github.com'
+          actor: "GithubActions"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v1
+      - run: yarn install --frozen-lockfile
+      - run: yarn run lint
+      - run: yarn run build
+      - run: yarn run test
+
+      - name: Configure NPM
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > .npmrc
+          echo "@nomad-ts:registry=https://registry.npmjs.org" >> .npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish Canary to NPM
+        run: |
+          yarn run publish --create-release github
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
