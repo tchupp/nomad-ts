@@ -10,7 +10,7 @@
     "lint": "lerna run lint",
     "build": "lerna run build",
     "test": "lerna run test",
-    "publish": "lerna run publish"
+    "publish": "lerna publish"
   },
   "devDependencies": {
     "fp-ts": "^2.8.1",
