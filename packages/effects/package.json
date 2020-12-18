@@ -1,0 +1,41 @@
+{
+  "name": "@nomad-ts/effects",
+  "version": "0.1.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tchupp/nomad-ts.git"
+  },
+  "author": "Theo Chupp <tclchiam@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tchupp/nomad-ts/issues"
+  },
+  "homepage": "https://github.com/tchupp/nomad-ts",
+  "scripts": {
+    "lint": "tslint --project tsconfig.json",
+    "clean": "rimraf lib",
+    "prebuild": "yarn run clean",
+    "build": "tsc && ts-node ../../scripts/build",
+    "test": "nyc ava",
+    "prepare": "yarn run build"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "dependencies": {
+    "fp-ts": "^2.8.1",
+    "@nomad-ts/core": "^0.4.2"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^1.1.1",
+    "ava": "^3.12.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.0.0",
+    "tslint": "^6.0.0",
+    "typescript": "^4.0.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "lib"
+  }
+}
