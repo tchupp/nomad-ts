@@ -14,10 +14,11 @@
   "homepage": "https://github.com/tchupp/nomad-ts",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib coverage .nyc_output",
     "prebuild": "yarn run clean",
     "build": "tsc && ts-node ../../scripts/build",
-    "test": "nyc ava",
+    "pretest": "yarn run build",
+    "test": "TS_NODE_TRANSPILE_ONLY=1 nyc ava",
     "prepare": "yarn run build"
   },
   "main": "lib/index.js",
@@ -26,7 +27,9 @@
     "fp-ts": "^2.8.1"
   },
   "devDependencies": {
+    "@ava/babel": "^1.0.1",
     "@ava/typescript": "^1.1.1",
+    "@babel/plugin-syntax-typescript": "^7.12.1",
     "ava": "^3.12.1",
     "nyc": "^15.1.0",
     "ts-node": "^9.0.0",
