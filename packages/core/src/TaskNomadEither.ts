@@ -176,6 +176,44 @@ export const effects: <Effect>(effs: ReadonlyArray<Effect>) => <Left, Right>(f: 
     /*#__PURE__*/
     effs => T.map(NE.effects(effs))
 
+/**
+ * Transforms a `Promise` that may reject to a `Promise` that never rejects and returns an `Either` instead.
+ *
+ * Note: `block` should never `throw` errors, they are not caught.
+ *
+ * @example
+ * import { TNE, NE } from "@nomad-ts/core";
+ * import { pipe } from "fp-ts/function";
+ *
+ * const nomadEither1 = pipe(
+ *   TNE.tryCatch(
+ *     () => Promise.resolve(1),
+ *     (err): string => `${err}`,
+ *   ),
+ * )();
+ *
+ * assert.deepStrictEqual(nomadEither1, NE.right(1));
+ *
+ *
+ * const nomadEither2 = pipe(
+ *   TNE.tryCatch(
+ *     () => Promise.reject('error'),
+ *     (err): string => `${err}`,
+ *   ),
+ * )();
+ *
+ * assert.deepStrictEqual(nomadEither2, NE.left('error'));
+ *
+ * @category constructors
+ * @since 1.0.0
+ */
+export function tryCatch<Effect, Left, Right>(
+    block: () => Promise<Right>,
+    onRejected: (reason: unknown) => Left,
+): TaskNomadEither<Effect, Left, Right> {
+    return () => block().then(NE.right, (reason) => NE.left(onRejected(reason)))
+}
+
 // -------------------------------------------------------------------------------------
 // destructors
 // -------------------------------------------------------------------------------------
