@@ -279,6 +279,30 @@ test("constructors - effects", async t => {
     t.deepEqual(await actual, expected);
 });
 
+test("constructors - tryCatch - resolve", async t => {
+    const actual = pipe(
+        AN.tryCatch(
+            (dep: { result: number }) => Promise.resolve(dep.result),
+            (err): string => `${err}`,
+        ),
+        AN.executePromise({result: 1}),
+    );
+
+    t.deepEqual(await actual, NE.right(1));
+});
+
+test("constructors - tryCatch - reject", async t => {
+    const actual = pipe(
+        AN.tryCatch(
+            (dep: { error_message: string }) => Promise.reject(dep.error_message),
+            (err): string => `${err}`,
+        ),
+        AN.executePromise({error_message: "error"}),
+    );
+
+    t.deepEqual(await actual, NE.left("error"));
+});
+
 // -------------------------------------------------------------------------------------
 // destructors
 // -------------------------------------------------------------------------------------
@@ -334,7 +358,7 @@ test("getOrElse", async t => {
         R.of,
     );
     const getOrElse = AN.getOrElse(
-        (l: string) => elseNomad,
+        (_l: string) => elseNomad,
     );
 
     {

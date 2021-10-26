@@ -257,6 +257,28 @@ test("constructors - effects", async t => {
     t.deepEqual(await actual(), expected);
 });
 
+test("constructors - tryCatch - resolve", async t => {
+    const actual = pipe(
+        TNE.tryCatch(
+            () => Promise.resolve(1),
+            (err): string => `${err}`,
+        ),
+    )();
+
+    t.deepEqual(await actual, NE.right(1));
+});
+
+test("constructors - tryCatch - reject", async t => {
+    const actual = pipe(
+        TNE.tryCatch(
+            () => Promise.reject("error"),
+            (err): string => `${err}`,
+        ),
+    )();
+
+    t.deepEqual(await actual, NE.left("error"));
+});
+
 // -------------------------------------------------------------------------------------
 // destructors
 // -------------------------------------------------------------------------------------
@@ -307,7 +329,7 @@ test("getOrElse", async t => {
         TN.effect(123),
     );
     const getOrElse = TNE.getOrElse(
-        (l: string) => elseNomad,
+        (_l: string) => elseNomad,
     );
 
     {
