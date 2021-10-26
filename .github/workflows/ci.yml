@@ -20,5 +20,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn install --frozen-lockfile
     - run: yarn run lint
+    - run: |
+        pwd
+        ls -lah node_modules/@nomad-ts
+        ls -lah node_modules/@nomad-ts/core
+        ls -lah node_modules/@nomad-ts/core/lib
+        cat node_modules/@nomad-ts/core/package.json
     - run: yarn run build
     - run: yarn run test
