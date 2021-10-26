@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@nomad-ts/core": "^0.1.0",
-    "@nomad-ts/effects": "^0.1.0",
     "fp-ts": "^2.8.1"
   },
   "devDependencies": {
