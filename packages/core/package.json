@@ -1,6 +1,6 @@
 {
   "name": "@nomad-ts/core",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "Multipurpose composable types that rollup effects",
   "repository": {
     "type": "git",

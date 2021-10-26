@@ -1,6 +1,6 @@
 {
   "name": "@nomad-ts/effects",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {
-    "@nomad-ts/core": "^0.4.2",
+    "@nomad-ts/core": "^0.5.0",
     "fp-ts": "^2.8.1",
     "uuid": "^8.3.2"
   },
